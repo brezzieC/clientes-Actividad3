@@ -1,0 +1,8 @@
+﻿@page "/FormVentas/edit/{idEmpleado}"
+@inject NavigationManager navigationManager
+<h3>Formulario Editar representante de ventas</h3>
+<FormVendedor idVendedor="int.Parse(idEmpleado)"></FormVendedor>
+@code {
+    [Parameter]
+    public string idEmpleado { get; set; }
+}

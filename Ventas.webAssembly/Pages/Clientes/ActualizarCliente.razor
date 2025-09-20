@@ -1,0 +1,8 @@
+﻿@page "/FormCliente/edit/{idcliente}"
+@inject NavigationManager navigationManager
+<h3>Formulario Editar Cliente</h3>
+<FormCliente idCliente="int.Parse(idcliente)"></FormCliente>
+@code {
+    [Parameter]
+    public string idcliente { get; set; }
+}

@@ -1,0 +1,103 @@
+﻿@page "/ListVentas"
+@inject NavigationManager navigationManager
+@inject RepresentantesService RepService
+@inject JefesService jefesService
+@inject SucursalesService sucursalesService
+<h3>Representantes de Ventas</h3>
+<button @onclick="navegar" class="btn btn-primary">Navegar a crear Vendedor</button>
+<div class="input-group m-3">
+    <input @bind-value="@BuscarVendedor" type="text" class="form-control" placeholder="Buscar Vendedor" aria-label="Recipient’s username with two button addons">
+    <button @onclick="(buscar)" class="btn btn-outline-dark" type="button">Buscar</button>
+    <button @onclick="(limpiar)" class="btn btn-outline-danger" type="button">Limpiar</button>
+</div>
+
+
+@if (lista != null && lista.Count != 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre del empleado</th>
+                <th>Sucursales</th>
+                <th>Jefes</th>
+                <th>Operaciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in lista)
+            {
+                <tr>
+                    <td>@item.IdEmpleado</td>
+                    <td>@item.Nombre</td>
+                    <td>@obtenerSucursal(item.idSucursales)</td>
+                    <td>@obtenerJefe(item.idJefe)</td>
+
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => recuperarLibro(item.IdEmpleado))">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen-fill" viewBox="0 0 16 16">
+                                <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001" />
+                            </svg>
+                        </button>
+                        <button class="btn btn-danger" @onclick="(() => eliminarLibro(item.IdEmpleado))">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+}
+else
+{
+    <h1>No hay</h1>
+}
+
+@code {
+    public List<oVentas>? lista { get; set; }
+    public string BuscarVendedor { get; set; } = string.Empty;
+    private void buscar()
+    {
+        lista = RepService.filtrarVendedores(BuscarVendedor);
+    }
+    private void limpiar()
+    {
+        BuscarVendedor = string.Empty;
+        listarLibros();
+    }
+    private string obtenerJefe(int id){
+        return jefesService.getNombre(id);
+    }
+    private string obtenerSucursal(int id)
+    {
+        return sucursalesService.getNombre(id);
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        lista = new List<oVentas>();
+        listarLibros();
+        return base.OnInitializedAsync();
+    }
+    private void navegar()
+    {
+        navigationManager.NavigateTo("/FormVentas");
+    }
+    private void recuperarLibro(int idEmpleado)
+    {
+        navigationManager.NavigateTo("FormVentas/edit/" + idEmpleado);
+    }
+    private void eliminarLibro(int IdEmpleado)
+    {
+        RepService.EliminarRepresentante(IdEmpleado);
+        listarLibros();
+    }
+    private void listarLibros()
+    {
+        lista = RepService.GetRepresentantes();
+    }
+}
